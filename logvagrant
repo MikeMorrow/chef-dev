@@ -1,0 +1,50 @@
+#!/bin/bash
+usage() {
+  cat <<EOF
+Usage: $0 [options]
+Log vagrant up for each of the machines defined in Vagrantfile provided.
+If no options are provided Vagrantfile assumed in current directory and
+all vagrant machines will be started.
+
+  -f                         specify Vagrantfile
+  -m                         list of machine(s) to start
+EOF
+  exit
+}
+
+vagrantFile=./Vagrantfile
+logLocation=./.vagrant
+vagrantMachines=""
+while getopts ":f:m:" opt; do
+  case $opt in
+    f) vagrantFile="$OPTARG"
+    ;;
+    m) vagrantMachines="$OPTARG"
+    ;;
+    \?) echo "Invalid option -$OPTARG" && usage
+    ;;
+  esac
+done
+
+if [ ! -d ${logLocation} ]; then
+  echo "Log location not found, creating: ${logLocation}"
+  mkdir -p ${logLocation}
+fi
+
+if [ ! -e ${vagrantFile} ]; then
+  echo "ERROR: Vagrantfile not found at: ${vagrantFile}"
+  usage
+fi
+
+if [ -z "${vagrantMachines}" ]; then
+  # find machine definitions
+  # remove commented out definitions
+  # strip machine definition to get get machine names
+  vagrantMachines=$(grep "vm.define" ${vagrantFile} | grep -v "^[ ]*#" | sed -r 's/.*\|(\S+)\|/\1/')
+fi
+
+for vagrantMachine in $vagrantMachines; do
+  echo "Starting ${vagrantMachine}..."
+  script -f -c "vagrant up ${vagrantMachine}" ${logLocation}/${vagrantMachine}.log
+  echo "Log stored at ${logLocation}/${vagrantMachine}.log"
+done
