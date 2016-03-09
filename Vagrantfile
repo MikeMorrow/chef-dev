@@ -3,7 +3,7 @@
 Vagrant.configure(2) do |config|
   config.vm.provider 'virtualbox' do |vb|
     vb.customize ['modifyvm', :id, '--memory', 2048,
-                  '--cpus', 2, '--ioapic', 'on']          
+                  '--cpus', 2, '--ioapic', 'on']
   end
   config.ssh.forward_x11 = true
   # ---------------------------------------------------------------------------
@@ -13,7 +13,7 @@ Vagrant.configure(2) do |config|
     #chefDev.vm.box = "MikeMorrow/centos.7.2"
     chefDev.vm.box  = "ubuntu/trusty64"
     # Networking
-    chefDev.vm.network :private_network, ip: "192.168.3.2"
+    chefDev.vm.network :private_network, ip: "192.168.3.40"
     chefDev.vm.hostname = 'chefDev'
     # Apache httpd
     chefDev.vm.network :forwarded_port, guest: 8080,  host: 8080
